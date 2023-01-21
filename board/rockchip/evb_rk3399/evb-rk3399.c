@@ -18,8 +18,6 @@
 #include <dwc3-uboot.h>
 #include <spl.h>
 
-#include <asm/io.h>
-
 DECLARE_GLOBAL_DATA_PTR;
 
 #define RK3399_CPUID_OFF  0x7
@@ -29,9 +27,6 @@ int rk_board_init(void)
 {
 	struct udevice *pinctrl, *regulator;
 	int ret;
-
-	__raw_writel(0xffff0001, (void __iomem *)0xff77e640);
-	printf("enable pcie power\n");
 
 	/*
 	 * The PWM does not have decicated interrupt number in dts and can

@@ -290,7 +290,7 @@ static int android_image_load_separate(struct blk_desc *dev_desc,
 		size = hdr->kernel_size + hdr->page_size;
 		blk_start = part->start;
 		blk_cnt = DIV_ROUND_UP(size, dev_desc->blksz);
-		if (!sysmem_alloc_base(MEMBLK_ID_KERNEL,
+		if (!sysmem_alloc_base("kernel",
 				       (phys_addr_t)android_load_address,
 				       blk_cnt * dev_desc->blksz))
 			return -ENXIO;
@@ -311,7 +311,7 @@ static int android_image_load_separate(struct blk_desc *dev_desc,
 		size = hdr->page_size + ALIGN(hdr->kernel_size, hdr->page_size);
 		blk_start = part->start + DIV_ROUND_UP(size, dev_desc->blksz);
 		blk_cnt = DIV_ROUND_UP(hdr->ramdisk_size, dev_desc->blksz);
-		if (!sysmem_alloc_base(MEMBLK_ID_RAMDISK,
+		if (!sysmem_alloc_base("ramdisk",
 				       ramdisk_addr_r,
 				       blk_cnt * dev_desc->blksz))
 			return -ENXIO;
@@ -347,7 +347,7 @@ static int android_image_load_separate(struct blk_desc *dev_desc,
 		       ALIGN(hdr->ramdisk_size, hdr->page_size);
 		blk_start = part->start + DIV_ROUND_UP(size, dev_desc->blksz);
 		blk_cnt = DIV_ROUND_UP(hdr->second_size, dev_desc->blksz);
-		if (!sysmem_alloc_base(MEMBLK_ID_FDT_AOSP,
+		if (!sysmem_alloc_base("fdt(AOSP)",
 				       fdt_addr_r,
 				       blk_cnt * dev_desc->blksz +
 				       CONFIG_SYS_FDT_PAD))
@@ -413,32 +413,15 @@ long android_image_load(struct blk_desc *dev_desc,
 			   part_info->blksz - 1) / part_info->blksz;
 		comp = android_image_parse_kernel_comp(hdr);
 		/*
-		 * We should load compressed kernel Image to high memory at
-		 * address "kernel_addr_c".
+		 * We should load a compressed kernel Image
+		 * to high memory
 		 */
 		if (comp != IH_COMP_NONE) {
-			ulong kernel_addr_c;
-
-			env_set_ulong("os_comp", comp);
-			kernel_addr_c = env_get_ulong("kernel_addr_c", 16, 0);
-			if (kernel_addr_c) {
-				load_address = kernel_addr_c - hdr->page_size;
-				unmap_sysmem(buf);
-				buf = map_sysmem(load_address, 0 /* size */);
-			}
-#ifdef CONFIG_ARM64
-			else {
-				printf("Warn: \"kernel_addr_c\" is not defined "
-				       "for compressed kernel Image!\n");
-				load_address += android_image_get_ksize(hdr) * 3;
-				load_address = ALIGN(load_address, ARCH_DMA_MINALIGN);
-				env_set_ulong("kernel_addr_c", load_address);
-
-				load_address -= hdr->page_size;
-				unmap_sysmem(buf);
-				buf = map_sysmem(load_address, 0 /* size */);
-			}
-#endif
+			load_address += android_image_get_ksize(hdr) * 3;
+			load_address = env_get_ulong("kernel_addr_c", 16, load_address);
+			load_address -= hdr->page_size;
+			unmap_sysmem(buf);
+			buf = map_sysmem(load_address, 0 /* size */);
 		}
 
 		if (blk_cnt * part_info->blksz > max_size) {
@@ -473,7 +456,7 @@ long android_image_load(struct blk_desc *dev_desc,
 			} else
 #endif
 			{
-				if (!sysmem_alloc_base(MEMBLK_ID_ANDROID,
+				if (!sysmem_alloc_base("android",
 						       (phys_addr_t)buf,
 							blk_cnt * part_info->blksz))
 					return -ENXIO;

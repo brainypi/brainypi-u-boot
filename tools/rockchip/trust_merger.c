@@ -102,11 +102,6 @@ static inline void fixPath(char *path)
 			strcpy(tmp, end);
 			/* Terminate, so path can be dest for strcat() */
 			*start = '\0';
-			strcat(path, gNewPath);
-			strcat(path, tmp);
-		} else {
-			strcpy(tmp, path);
-			strcpy(path, gNewPath);
 			strcat(path, tmp);
 		}
 	}
@@ -215,6 +210,7 @@ static bool parseOut(FILE *file)
 	}
 	if (fscanf(file, OPT_OUT_PATH "=%[^\r^\n]", gOpts.outPath) != 1)
 		return false;
+	fixPath(gOpts.outPath);
 	printf("out:%s\n", gOpts.outPath);
 
 	return true;

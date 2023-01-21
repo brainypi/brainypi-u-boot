@@ -13,7 +13,6 @@
 #include <g_dnl.h>
 #include <net.h>
 #include <usb.h>
-#include <sysmem.h>
 
 static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 {
@@ -22,6 +21,7 @@ static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 	char *usb_controller;
 	int ret;
 #endif
+
 	if (argc < 2)
 		return CMD_RET_USAGE;
 
@@ -65,13 +65,6 @@ static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 		goto exit;
 	}
 
-	if (!sysmem_alloc_base(MEMBLK_ID_FASTBOOT,
-			       CONFIG_FASTBOOT_BUF_ADDR,
-			       CONFIG_FASTBOOT_BUF_SIZE)) {
-		printf("The fastboot memory space is unusable!\n");
-		return CMD_RET_FAILURE;
-	}
-
 	printf("OK\n");
 
 	while (1) {
@@ -85,7 +78,6 @@ static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 	ret = CMD_RET_SUCCESS;
 
 exit:
-	sysmem_free(CONFIG_FASTBOOT_BUF_ADDR);
 	g_dnl_unregister();
 	g_dnl_clear_detach();
 	board_usb_cleanup(controller_index, USB_INIT_DEVICE);

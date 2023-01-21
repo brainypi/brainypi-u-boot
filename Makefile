@@ -654,7 +654,6 @@ libs-y += fs/
 libs-y += net/
 libs-y += disk/
 libs-y += drivers/
-libs-y += drivers/cpu/
 libs-y += drivers/dma/
 libs-y += drivers/gpio/
 libs-y += drivers/i2c/
@@ -924,11 +923,7 @@ endif
 quiet_cmd_copy = COPY    $@
       cmd_copy = cp $< $@
 
-ifeq ($(CONFIG_USING_KERNEL_DTB),y)
-u-boot.dtb: dts/dt-spl.dtb FORCE
-else
-u-boot.dtb: dts/dt.dtb FORCE
-endif
+u-boot.dtb: dts/dt.dtb
 	$(call cmd,copy)
 
 OBJCOPYFLAGS_u-boot.hex := -O ihex

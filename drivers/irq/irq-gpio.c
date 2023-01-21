@@ -276,10 +276,6 @@ static int gpio_irq_enable(int gpio_irq)
 
 	gpio_irq_unmask(bank->regbase, offset_to_bit(gpio));
 
-	if (bank->use_count == 0)
-		irq_handler_enable(IRQ_GPIO0 + bank->id);
-	bank->use_count++;
-
 	return 0;
 }
 
@@ -296,10 +292,6 @@ static int gpio_irq_disable(int irq)
 		return -EINVAL;
 
 	gpio_irq_mask(bank->regbase, offset_to_bit(gpio));
-
-	if (bank->use_count == 1)
-		irq_handler_disable(IRQ_GPIO0 + bank->id);
-	bank->use_count--;
 
 	return 0;
 }
@@ -319,8 +311,8 @@ static int gpio_irq_init(void)
 			irq_install_handler(IRQ_GPIO0 + bank->id,
 			(interrupt_handler_t *)generic_gpio_handle_irq, NULL);
 
-			/* default disable all gpio group interrupt */
-			irq_handler_disable(IRQ_GPIO0 + bank->id);
+			/* default enable all gpio group interrupt */
+			irq_handler_enable(IRQ_GPIO0 + bank->id);
 		}
 	}
 

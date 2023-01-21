@@ -116,7 +116,7 @@ void boot_devtype_init(void)
 		if (ret) {
 			/* Set default dev type/num if command not valid */
 			devtype = "mmc";
-			devnum = "0";
+			devnum = "1";
 			env_set("devtype", devtype);
 			env_set("devnum", devnum);
 		}
@@ -164,8 +164,6 @@ void rockchip_dnl_mode_check(void)
 			printf("recovery key pressed, entering recovery mode!\n");
 			env_set("reboot_mode", "recovery");
 		}
-	} else if (gd->console_evt == CONSOLE_EVT_CTRL_F) {
-		env_set("reboot_mode", "fastboot");
 	}
 }
 

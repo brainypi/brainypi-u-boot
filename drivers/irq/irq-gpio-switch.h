@@ -26,7 +26,6 @@ struct gpio_bank {
 	int id;
 	int irq_base;
 	int ngpio;
-	int use_count;
 };
 
 #define GPIO_BANK_REGISTER(ID, GPIO_BANK_NUM)	\
@@ -36,7 +35,6 @@ struct gpio_bank {
 		.id	  = ID,						\
 		.irq_base = PIN_BASE + (ID) * (GPIO_BANK_NUM),		\
 		.ngpio    = GPIO_BANK_NUM,				\
-		.use_count = 0						\
 	}
 
 /* gpio bank[31:8] and pin[7:0] */

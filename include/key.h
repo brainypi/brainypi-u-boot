@@ -18,43 +18,49 @@ enum {
 	GPIO_KEY  = 0x2,
 };
 
-enum key_event {
+enum key_state {
 	KEY_PRESS_NONE,	/* press without release */
 	KEY_PRESS_DOWN,	/* press -> release */
 	KEY_PRESS_LONG_DOWN,
 	KEY_NOT_EXIST,
 };
 
-struct dm_key_uclass_platdata {
+struct input_key {
+	struct udevice *parent;
+	struct list_head link;
 	const char *name;
 	bool pre_reloc;
 	u32 code;
 	u8 type;
 
 	/* ADC key */
-	u8 channel;
 	u32 adcval;
-	u32 min;
-	u32 max;
+	u32 vref;
+	u8 channel;
 
 	/* GPIO key */
 	u32 irq;
-	u32 gpios[2];
 	struct gpio_desc gpio;
 
-	u64 rise_ms;
-	u64 fall_ms;
+	/* Event */
+	u64 up_t;
+	u64 down_t;
+};
+
+struct dm_key_ops {
+	const char *name;
 };
 
 /* Use it instead of get_timer() in key interrupt handler */
 uint64_t key_timer(uint64_t base);
+
+/* Reister you key to dm key framework */
+void key_add(struct input_key *key);
 
 /* Confirm if your key value is a press event */
 int key_is_pressed(int keyval);
 
 /* Read key */
 int key_read(int code);
-
-int key_bind_children(struct udevice *dev, const char *drv_name);
 
 #endif

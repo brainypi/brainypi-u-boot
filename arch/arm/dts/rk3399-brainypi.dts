@@ -1,0 +1,17 @@
+/*
+ * (C) Copyright 2016 Rockchip Electronics Co., Ltd
+ *
+ * SPDX-License-Identifier:     GPL-2.0+
+ */
+
+/dts-v1/;
+#include "rk3399-brainypi.dtsi"
+
+/ {
+	model = "BRAINYPI";
+	compatible = "rockchip,rk3399","google,rk3399evb-rev2", "brainypi,brainypi";
+};
+
+&vcc5v0_host {
+	gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
+};

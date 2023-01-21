@@ -8,4 +8,4 @@
 obj-$(CONFIG_EXYNOS_ACE_SHA)	+= ace_sha.o
 obj-y += rsa_mod_exp/
 obj-y += fsl/
-obj-y += rockchip/
+obj-$(CONFIG_CRYPTO_ROCKCHIP) += rockchip/
